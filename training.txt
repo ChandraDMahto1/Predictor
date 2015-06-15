@@ -1,0 +1,89 @@
+%% Image classification
+%% Platform used:- Matlab (2014b or above).
+%% Class/Tool used :- Computer Vision System Toolbox
+%% The following matlab commands will be used to produce an image classifier.
+%% After training the data, it will be able to classify omages in one of the categories it is trained in.
+%% Input :- Location of image to be judged/classified.
+%% Output :- The supposed category the image falls in as per this program.
+
+%
+%% The results are tentative, they may be erroneous. More relative data for training will give better accuracy. 
+%
+
+rootFolder = fullfile(## Location_of_Root_Folder ##);
+imgSets = [ imageSet(fullfile(## Location_of_Folder_of_Images ##), ...
+            .
+	    .
+	    %% You can have any number of Image sets declared inside the square brackets, separated by comma
+	    .
+	    . 
+          ];
+
+{ imgSets.Description } % describes the folders, usually their names
+
+[imgSets.Count]   % gives the number of files in each folder (in order)
+
+minSetCount = min([imgSets.Count]);  % gives the minimum number of images out of the image sets made earlier
+
+imgSets = partition(imgSets, minSetCount, 'randomize'); % makes each partition of equal size (equal to minSetCount).
+
+[imgSets.Count] % not necessary, gives the new number of images in each image set (all the sets should have equal number of files now). 
+
+%% Start training the data 
+%% Step 1: Make training set and Validation Set
+
+[trainingSets, validationSets] = partition(imgSets, n , 'randomize'); %% n is a fraction between 0-1. n*100 percent images go in training set, rest (100-n percent) go in validation set. 
+bag = bagOfFeatures(trainingSets);
+img = read(imgSets(1), 1);
+featureVector = encode(bag, img);
+
+%% Make the histogram which will be used used for training.
+figure
+bar(featureVector)
+title('Visual word occurrences')
+xlabel('Visual word index')
+ylabel('Frequency of occurrence') % these commands will produce a histogram
+
+%% Use bag of features for classification. Each classification process will ield its result, followe by an accuracy rate  between 0-1.
+categoryClassifier = trainImageCategoryClassifier(trainingSets, bag);
+confMatrix = evaluate(categoryClassifier, trainingSets);
+confMatrix = evaluate(categoryClassifier, validationSets);
+mean(diag(confMatrix)); % gives the average accuracy rate.
+
+%
+%% Follow this with a test case as shown in testing.txt
+%
+
+******************************************************************************************
+
+Variables:-
+1. Location_of_Root_Folder
+2. Location_of_Folder_of_Images
+3. n
+
+*******************************************************************************************
+
+Example:-
+
+rootFolder = fullfile('G:');
+imgSets = [ imageSet(fullfile(rootFolder, 'people')), ...
+            imageSet(fullfile(rootFolder, 'house')), ...
+            imageSet(fullfile(rootFolder, 'brain')) ];
+{ imgSets.Description }
+[imgSets.Count]   
+minSetCount = min([imgSets.Count]); 
+imgSets = partition(imgSets, minSetCount, 'randomize');
+[imgSets.Count]
+[trainingSets, validationSets] = partition(imgSets, 0.3, 'randomize');
+bag = bagOfFeatures(trainingSets);
+img = read(imgSets(1), 1);
+featureVector = encode(bag, img);
+figure
+bar(featureVector)
+title('Visual word occurrences')
+xlabel('Visual word index')
+ylabel('Frequency of occurrence')
+categoryClassifier = trainImageCategoryClassifier(trainingSets, bag);
+confMatrix = evaluate(categoryClassifier, trainingSets);
+confMatrix = evaluate(categoryClassifier, validationSets);
+mean(diag(confMatrix));

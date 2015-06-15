@@ -1,0 +1,18 @@
+% Code to test a given image  
+% ## XYZ ## is a variable, which needs to be changed at run-time.
+
+img = imread(fullfile(##Image_Location##));
+[labelIdx, scores] = predict(categoryClassifier, img);
+categoryClassifier.Labels(labelIdx)
+
+Variables:-
+Image_Location
+	Replace it with the location of the image to be tested (relative or absolute location).
+
+************************************************************************************************
+
+Example:-
+
+img = imread(fullfile(rootFolder, 'test.jpg'));
+[labelIdx, scores] = predict(categoryClassifier, img);
+categoryClassifier.Labels(labelIdx)
